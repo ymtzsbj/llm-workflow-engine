@@ -1,0 +1,36 @@
+name: Feature proposal
+description: Propose a focused workflow capability.
+title: "proposal: "
+labels: ["enhancement"]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: Workflow problem
+      description: Describe the concrete workflow that is difficult today.
+    validations:
+      required: true
+  - type: textarea
+    id: scope
+    attributes:
+      label: Proposed scope
+      description: Explain the smallest useful capability.
+    validations:
+      required: true
+  - type: dropdown
+    id: side_effect
+    attributes:
+      label: Does this add an external side effect?
+      options:
+        - "No"
+        - "Yes: file write"
+        - "Yes: network, shell, account, or publishing action"
+    validations:
+      required: true
+  - type: textarea
+    id: verification
+    attributes:
+      label: Verification plan
+      description: Explain how users can prove the capability behaved correctly.
+    validations:
+      required: true

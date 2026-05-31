@@ -1,0 +1,39 @@
+{
+  "version": "1",
+  "name": "daily-brief",
+  "description": "Render a local daily brief and require approval before writing it.",
+  "inputs": {
+    "focus": "Ship one small, verifiable improvement."
+  },
+  "steps": [
+    {
+      "id": "read_dashboard",
+      "uses": "read_text",
+      "with": {
+        "path": "examples/vault/Dashboard.md"
+      }
+    },
+    {
+      "id": "render_brief",
+      "uses": "render_template",
+      "needs": [
+        "read_dashboard"
+      ],
+      "with": {
+        "template": "# Daily brief\n\n## Dashboard\n${{ steps.read_dashboard.output }}\n\n## Focus\n${{ inputs.focus }}\n"
+      }
+    },
+    {
+      "id": "write_brief",
+      "uses": "write_text",
+      "needs": [
+        "render_brief"
+      ],
+      "approval": "required",
+      "with": {
+        "path": "examples/vault/outputs/daily-brief.md",
+        "content": "${{ steps.render_brief.output }}"
+      }
+    }
+  ]
+}

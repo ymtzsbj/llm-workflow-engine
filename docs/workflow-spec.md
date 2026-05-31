@@ -1,0 +1,77 @@
+# Workflow Specification v1
+
+A workflow is a JSON object with a name, optional default inputs, and an
+ordered list of steps.
+
+## Top-Level Fields
+
+| Field | Required | Description |
+| --- | --- | --- |
+| `version` | yes | Must be `"1"`. |
+| `name` | yes | Human-readable workflow name. |
+| `description` | no | Short explanation of the workflow. |
+| `inputs` | no | Default scalar input values. |
+| `steps` | yes | Non-empty list of workflow steps. |
+
+## Step Fields
+
+| Field | Required | Description |
+| --- | --- | --- |
+| `id` | yes | Unique identifier using letters, digits, `_`, or `-`. |
+| `uses` | yes | Built-in action name. |
+| `with` | no | Action parameters. |
+| `needs` | no | List of step IDs that must complete first. |
+| `approval` | for writes | Must be `"required"` for `write_text`. |
+
+## Expressions
+
+String parameters may reference inputs and step outputs:
+
+```text
+${{ inputs.focus }}
+${{ steps.read_dashboard.output }}
+```
+
+Expressions are resolved immediately before each step runs.
+
+## Built-In Actions
+
+### `read_text`
+
+Reads a UTF-8 text file within the selected workspace.
+
+```json
+{"path": "notes/Dashboard.md"}
+```
+
+### `render_template`
+
+Returns the resolved template string. Expressions may appear in `template`.
+
+```json
+{"template": "# Brief\n${{ inputs.focus }}\n"}
+```
+
+### `write_text`
+
+Writes UTF-8 text within the selected workspace. The step must declare
+`"approval": "required"` and execution requires `--execute`, `--allow-writes`,
+and `--approve <step-id>`.
+
+```json
+{"path": "outputs/brief.md", "content": "${{ steps.render.output }}"}
+```
+
+## Evidence
+
+Each `run` creates `.workflow-runs/<run-id>/run.json`. The record contains:
+
+- workflow name and run ID;
+- mode and final status;
+- step status;
+- action metadata;
+- file paths relative to the workspace;
+- SHA-256 hashes and byte sizes;
+- failure messages when a step is blocked or fails.
+
+The record deliberately excludes file contents.

@@ -1,0 +1,36 @@
+name: Bug report
+description: Report a reproducible workflow engine problem.
+title: "bug: "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: Thanks for reporting a problem. Please remove private data from examples.
+  - type: textarea
+    id: workflow
+    attributes:
+      label: Minimal workflow
+      description: Provide a small JSON workflow or link to a reproduction repository.
+      render: json
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual behavior and evidence
+      description: Include the command and sanitized evidence log when possible.
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: Version
+      placeholder: v0.1.0
+    validations:
+      required: true
