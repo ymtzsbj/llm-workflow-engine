@@ -48,40 +48,41 @@ def load_workflow(path: Path) -> Workflow:
     except json.JSONDecodeError as exc:
         raise WorkflowError(f"invalid JSON at line {exc.lineno}, column {exc.colno}") from exc
 
-    data = _require_mapping(raw, "workflow")
+    data = _require_mapping(raw, "$")
     version = data.get("version")
     if version != "1":
-        raise WorkflowError('workflow version must be "1"')
+        raise WorkflowError('$.version must be "1"')
 
     name = data.get("name")
     if not isinstance(name, str) or not name.strip():
-        raise WorkflowError("workflow name must be a non-empty string")
+        raise WorkflowError("$.name must be a non-empty string")
 
     description = data.get("description", "")
     if not isinstance(description, str):
-        raise WorkflowError("workflow description must be a string")
+        raise WorkflowError("$.description must be a string")
 
-    inputs = _require_mapping(data.get("inputs", {}), "workflow inputs")
+    inputs = _require_mapping(data.get("inputs", {}), "$.inputs")
     raw_steps = data.get("steps")
     if not isinstance(raw_steps, list) or not raw_steps:
-        raise WorkflowError("workflow steps must be a non-empty list")
+        raise WorkflowError("$.steps must be a non-empty list")
 
     steps: List[WorkflowStep] = []
     for index, raw_step in enumerate(raw_steps):
-        step = _require_mapping(raw_step, f"step {index}")
+        step_path = f"$.steps[{index}]"
+        step = _require_mapping(raw_step, step_path)
         step_id = step.get("id")
         if not isinstance(step_id, str) or not STEP_ID_RE.match(step_id):
-            raise WorkflowError(f"step {index} id must match {STEP_ID_RE.pattern}")
+            raise WorkflowError(f"{step_path}.id must match {STEP_ID_RE.pattern}")
         uses = step.get("uses")
         if not isinstance(uses, str) or not uses:
-            raise WorkflowError(f"step {step_id} uses must be a non-empty string")
-        params = _require_mapping(step.get("with", {}), f"step {step_id} with")
+            raise WorkflowError(f"{step_path}.uses must be a non-empty string")
+        params = _require_mapping(step.get("with", {}), f"{step_path}.with")
         needs = step.get("needs", [])
         if not isinstance(needs, list) or not all(isinstance(item, str) for item in needs):
-            raise WorkflowError(f"step {step_id} needs must be a list of step ids")
+            raise WorkflowError(f"{step_path}.needs must be a list of step ids")
         approval = step.get("approval")
         if approval not in (None, "required"):
-            raise WorkflowError(f'step {step_id} approval must be "required" when set')
+            raise WorkflowError(f'{step_path}.approval must be "required" when set')
         steps.append(WorkflowStep(step_id, uses, params, needs, approval))
 
     return Workflow(version, name, description, inputs, steps)

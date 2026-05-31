@@ -47,6 +47,7 @@ Python 3.9 or newer is enough.
 
 ```bash
 python3 -m pip install -e .
+python3 -m llm_workflow_engine.cli init my-first.workflow.json
 python3 -m llm_workflow_engine.cli validate examples/daily-brief.workflow.json
 python3 -m llm_workflow_engine.cli plan examples/daily-brief.workflow.json
 python3 -m llm_workflow_engine.cli run examples/daily-brief.workflow.json
@@ -54,6 +55,11 @@ python3 -m llm_workflow_engine.cli run examples/daily-brief.workflow.json
 
 The last command is a dry-run. It creates an evidence log under
 `.workflow-runs/`, but it does not write the generated brief.
+
+The `init` command creates a schema-aware starter workflow and refuses to
+overwrite an existing file unless `--force` is passed. Editors that support
+JSON Schema can use [schema/workflow.schema.json](schema/workflow.schema.json)
+for autocomplete and inline feedback.
 
 Execute the approved write explicitly:
 

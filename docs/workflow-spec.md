@@ -3,10 +3,21 @@
 A workflow is a JSON object with a name, optional default inputs, and an
 ordered list of steps.
 
+Create a schema-aware starter file with:
+
+```bash
+llm-workflow init my-first.workflow.json
+```
+
+The command refuses to overwrite an existing file unless `--force` is
+provided. The public JSON Schema lives at
+[`schema/workflow.schema.json`](../schema/workflow.schema.json).
+
 ## Top-Level Fields
 
 | Field | Required | Description |
 | --- | --- | --- |
+| `$schema` | no | URL or path for editor autocomplete and static validation. |
 | `version` | yes | Must be `"1"`. |
 | `name` | yes | Human-readable workflow name. |
 | `description` | no | Short explanation of the workflow. |

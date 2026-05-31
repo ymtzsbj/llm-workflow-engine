@@ -13,6 +13,48 @@ from .engine import WorkflowRunner
 from .model import WorkflowError, load_workflow
 
 
+STARTER_SCHEMA_URL = (
+    "https://raw.githubusercontent.com/ymtzsbj/llm-workflow-engine/main/schema/workflow.schema.json"
+)
+
+
+def _starter_workflow(name: str) -> Dict[str, Any]:
+    return {
+        "$schema": STARTER_SCHEMA_URL,
+        "version": "1",
+        "name": name,
+        "description": "Render a local draft and require approval before writing it.",
+        "inputs": {"focus": "Ship one small, verifiable improvement."},
+        "steps": [
+            {
+                "id": "render_draft",
+                "uses": "render_template",
+                "with": {"template": "# Draft\n\n## Focus\n${{ inputs.focus }}\n"},
+            },
+            {
+                "id": "write_draft",
+                "uses": "write_text",
+                "needs": ["render_draft"],
+                "approval": "required",
+                "with": {
+                    "path": "outputs/draft.md",
+                    "content": "${{ steps.render_draft.output }}",
+                },
+            },
+        ],
+    }
+
+
+def _init_workflow(path: Path, *, name: str | None = None, force: bool = False) -> None:
+    if path.exists() and not force:
+        raise WorkflowError(f"refusing to overwrite existing file: {path}; pass --force to replace it")
+    path.parent.mkdir(parents=True, exist_ok=True)
+    workflow_name = name or path.name.removesuffix(".workflow.json").removesuffix(".json")
+    if not workflow_name:
+        raise WorkflowError("workflow name cannot be empty")
+    path.write_text(json.dumps(_starter_workflow(workflow_name), indent=2) + "\n", encoding="utf-8")
+
+
 def _inputs(values: Iterable[str]) -> Dict[str, Any]:
     result: Dict[str, Any] = {}
     for value in values:
@@ -31,6 +73,11 @@ def _parser() -> argparse.ArgumentParser:
         description="Local-first workflow harness for reliable AI agent automation.",
     )
     subparsers = parser.add_subparsers(dest="command", required=True)
+
+    init = subparsers.add_parser("init", help="create a safe starter workflow")
+    init.add_argument("workflow", type=Path)
+    init.add_argument("--name", help="workflow name; defaults to the file name")
+    init.add_argument("--force", action="store_true", help="replace an existing workflow file")
 
     validate = subparsers.add_parser("validate", help="validate a workflow definition")
     validate.add_argument("workflow", type=Path)
@@ -56,6 +103,10 @@ def main(argv: Iterable[str] | None = None) -> int:
     parser = _parser()
     args = parser.parse_args(list(argv) if argv is not None else None)
     try:
+        if args.command == "init":
+            _init_workflow(args.workflow, name=args.name, force=args.force)
+            print(f"created: {args.workflow}")
+            return 0
         if args.command == "list-actions":
             for name, action in ACTIONS.items():
                 print(f"{name}\t{action.effect}")

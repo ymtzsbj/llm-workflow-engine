@@ -1,4 +1,5 @@
 {
+  "$schema": "https://raw.githubusercontent.com/ymtzsbj/llm-workflow-engine/main/schema/workflow.schema.json",
   "version": "1",
   "name": "daily-brief",
   "description": "Render a local daily brief and require approval before writing it.",

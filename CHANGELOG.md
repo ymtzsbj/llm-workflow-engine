@@ -4,6 +4,18 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+## [0.2.0] - 2026-05-31
+
+### Added
+
+- JSON Schema for workflow editor autocomplete and static validation.
+- `llm-workflow init` command for creating a safe starter workflow.
+
+### Changed
+
+- Validation errors now include JSON-style paths for faster authoring feedback.
+- The daily brief example declares the public workflow schema.
+
 ## [0.1.0] - 2026-05-31
 
 ### Added

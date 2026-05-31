@@ -5,7 +5,7 @@ from setuptools import find_packages, setup
 
 setup(
     name="llm-workflow-engine",
-    version="0.1.0",
+    version="0.2.0",
     description="A local-first workflow harness for reliable AI agent automation",
     long_description=open("README.md", encoding="utf-8").read(),
     long_description_content_type="text/markdown",

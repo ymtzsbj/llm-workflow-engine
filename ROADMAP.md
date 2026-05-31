@@ -15,8 +15,9 @@ automation claims.
 
 ## v0.2: Better Authoring
 
-- [ ] JSON Schema for editor autocomplete
-- [ ] More precise validation messages with JSON paths
+- [x] JSON Schema for editor autocomplete
+- [x] Safe `init` command for starter workflows
+- [x] More precise validation messages with JSON paths
 - [ ] Conditional steps
 - [ ] Output contracts for actions
 - [ ] Redaction rules for evidence metadata
