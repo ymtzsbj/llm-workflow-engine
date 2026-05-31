@@ -53,6 +53,7 @@
           "enum": [
             "read_text",
             "inspect_git",
+            "render_issue_triage",
             "render_template",
             "write_text"
           ]

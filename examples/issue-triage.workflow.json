@@ -1,0 +1,41 @@
+{
+  "$schema": "https://raw.githubusercontent.com/ymtzsbj/llm-workflow-engine/main/schema/workflow.schema.json",
+  "version": "1",
+  "name": "issue-triage-draft",
+  "description": "Render a reviewable issue triage draft from a local JSON export without updating remote issues.",
+  "inputs": {
+    "issue_export": "examples/fixtures/issues.json"
+  },
+  "steps": [
+    {
+      "id": "read_issue_export",
+      "uses": "read_text",
+      "with": {
+        "path": "${{ inputs.issue_export }}"
+      }
+    },
+    {
+      "id": "render_triage_draft",
+      "uses": "render_issue_triage",
+      "needs": [
+        "read_issue_export"
+      ],
+      "with": {
+        "issues": "${{ steps.read_issue_export.output }}",
+        "max_issues": 100
+      }
+    },
+    {
+      "id": "write_triage_draft",
+      "uses": "write_text",
+      "needs": [
+        "render_triage_draft"
+      ],
+      "approval": "required",
+      "with": {
+        "path": "drafts/issue-triage.md",
+        "content": "${{ steps.render_triage_draft.output }}"
+      }
+    }
+  ]
+}

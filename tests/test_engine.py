@@ -7,7 +7,7 @@ from pathlib import Path
 
 from llm_workflow_engine.actions import ACTIONS, ActionError, workspace_path
 from llm_workflow_engine.engine import WorkflowRunner
-from llm_workflow_engine.model import Workflow, WorkflowError, WorkflowStep, validate_workflow
+from llm_workflow_engine.model import Workflow, WorkflowError, WorkflowStep, load_workflow, validate_workflow
 
 
 def workflow_for(*steps: WorkflowStep) -> Workflow:
@@ -118,6 +118,68 @@ class WorkflowExecutionTests(unittest.TestCase):
     def test_inspect_git_rejects_unbounded_commit_count(self) -> None:
         with self.assertRaisesRegex(ActionError, "max_commits"):
             ACTIONS["inspect_git"].run(self.workspace, {"max_commits": 1000})
+
+
+class IssueTriageExampleTests(unittest.TestCase):
+    def setUp(self) -> None:
+        self.temp_dir = tempfile.TemporaryDirectory()
+        self.workspace = Path(self.temp_dir.name)
+        repository = Path(__file__).parents[1]
+        fixture = repository / "examples" / "fixtures" / "issues.json"
+        fixture_target = self.workspace / "examples" / "fixtures" / "issues.json"
+        fixture_target.parent.mkdir(parents=True)
+        fixture_target.write_text(fixture.read_text(encoding="utf-8"), encoding="utf-8")
+        self.workflow = load_workflow(repository / "examples" / "issue-triage.workflow.json")
+
+    def tearDown(self) -> None:
+        self.temp_dir.cleanup()
+
+    def test_dry_run_plans_triage_draft_without_writing(self) -> None:
+        record = WorkflowRunner(self.workspace).run(self.workflow)
+        self.assertEqual("completed", record["status"])
+        self.assertEqual(["completed", "completed", "planned"], [step["status"] for step in record["steps"]])
+        self.assertEqual(3, record["steps"][1]["evidence"]["issues"])
+        self.assertFalse((self.workspace / "drafts" / "issue-triage.md").exists())
+
+    def test_execute_blocks_triage_draft_without_approval(self) -> None:
+        record = WorkflowRunner(self.workspace).run(self.workflow, execute=True, allow_writes=True)
+        self.assertEqual("failed", record["status"])
+        self.assertIn("--approve write_triage_draft", record["error"])
+        self.assertFalse((self.workspace / "drafts" / "issue-triage.md").exists())
+
+    def test_evidence_excludes_issue_titles_and_rendered_draft(self) -> None:
+        record = WorkflowRunner(self.workspace).run(self.workflow)
+        evidence_path = self.workspace / ".workflow-runs" / record["run_id"] / "run.json"
+        contents = evidence_path.read_text(encoding="utf-8")
+        self.assertNotIn("CLI crashes", contents)
+        self.assertNotIn("leaked credential", contents)
+        self.assertIn('"issues": 3', contents)
+
+    def test_execute_writes_triage_draft_after_explicit_approval(self) -> None:
+        record = WorkflowRunner(self.workspace).run(
+            self.workflow,
+            execute=True,
+            allow_writes=True,
+            approvals={"write_triage_draft"},
+        )
+        self.assertEqual("completed", record["status"])
+        draft = (self.workspace / "drafts" / "issue-triage.md").read_text(encoding="utf-8")
+        self.assertIn("## #17: CLI crashes", draft)
+        self.assertIn("- Suggested priority: `medium`", draft)
+        self.assertIn("- Suggested labels: `bug`", draft)
+        self.assertIn("Should details move to the private vulnerability reporting channel?", draft)
+
+    def test_rejects_issue_export_path_escape(self) -> None:
+        record = WorkflowRunner(self.workspace).run(
+            self.workflow,
+            overrides={"issue_export": "../secret.json"},
+        )
+        self.assertEqual("failed", record["status"])
+        self.assertIn("path escapes workspace", record["error"])
+
+    def test_rejects_invalid_issue_export_json(self) -> None:
+        with self.assertRaisesRegex(ActionError, "valid JSON"):
+            ACTIONS["render_issue_triage"].run(self.workspace, {"issues": "not-json"})
 
 
 if __name__ == "__main__":

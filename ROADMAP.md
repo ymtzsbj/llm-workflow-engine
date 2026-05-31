@@ -27,7 +27,7 @@ automation claims.
 - [x] Git repository read-only inspection action
 - [x] Release note draft example
 - [x] Maintainer guide
-- [ ] Issue triage draft example
+- [x] Issue triage draft example
 - [ ] Pluggable action packages
 - [ ] Action-level timeout and retry policies
 
