@@ -17,6 +17,7 @@ The built-in engine is deliberately local-first:
 - file operations are restricted to the selected workspace;
 - write steps require explicit approval;
 - run evidence stores hashes and metadata instead of copied file contents;
+- Git inspection uses a fixed read-only command set inside the workspace;
 - shell execution, network requests, and publishing actions are not built in.
 
 New action proposals that add external side effects must document their threat

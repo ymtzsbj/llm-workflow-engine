@@ -4,6 +4,16 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+## [0.3.0] - 2026-06-01
+
+### Added
+
+- Read-only `inspect_git` action for local maintainer workflows.
+- Release note draft example that summarizes repository state before requiring
+  explicit approval for the local draft write.
+- Maintainer guide with the release and issue-triage responsibilities used by
+  this project.
+
 ## [0.2.0] - 2026-05-31
 
 ### Added

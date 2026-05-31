@@ -24,8 +24,9 @@ automation claims.
 
 ## v0.3: Maintainer Workflows
 
-- [ ] Git repository read-only inspection action
-- [ ] Release note draft example
+- [x] Git repository read-only inspection action
+- [x] Release note draft example
+- [x] Maintainer guide
 - [ ] Issue triage draft example
 - [ ] Pluggable action packages
 - [ ] Action-level timeout and retry policies

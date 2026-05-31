@@ -1,10 +1,11 @@
 from __future__ import annotations
 
 import tempfile
+import subprocess
 import unittest
 from pathlib import Path
 
-from llm_workflow_engine.actions import ActionError, workspace_path
+from llm_workflow_engine.actions import ACTIONS, ActionError, workspace_path
 from llm_workflow_engine.engine import WorkflowRunner
 from llm_workflow_engine.model import Workflow, WorkflowError, WorkflowStep, validate_workflow
 
@@ -96,6 +97,27 @@ class WorkflowExecutionTests(unittest.TestCase):
     def test_rejects_path_escape(self) -> None:
         with self.assertRaisesRegex(ActionError, "escapes workspace"):
             workspace_path(self.workspace, "../secret.md")
+
+    def test_inspect_git_returns_read_only_repository_summary(self) -> None:
+        subprocess.run(["git", "init", "-q", str(self.workspace)], check=True)
+        subprocess.run(["git", "-C", str(self.workspace), "config", "user.name", "Test User"], check=True)
+        subprocess.run(["git", "-C", str(self.workspace), "config", "user.email", "test@example.com"], check=True)
+        subprocess.run(["git", "-C", str(self.workspace), "add", "input.md"], check=True)
+        subprocess.run(["git", "-C", str(self.workspace), "commit", "-qm", "add dashboard"], check=True)
+        result = ACTIONS["inspect_git"].run(self.workspace, {"path": ".", "max_commits": 3})
+        self.assertIn("Working tree: clean", result.output)
+        self.assertIn("- ", result.output)
+        self.assertIn("add dashboard", result.output)
+        self.assertEqual(0, result.evidence["dirty_paths"])
+        self.assertEqual("dashboard", (self.workspace / "input.md").read_text(encoding="utf-8"))
+
+    def test_inspect_git_rejects_path_escape(self) -> None:
+        with self.assertRaisesRegex(ActionError, "escapes workspace"):
+            ACTIONS["inspect_git"].run(self.workspace, {"path": ".."})
+
+    def test_inspect_git_rejects_unbounded_commit_count(self) -> None:
+        with self.assertRaisesRegex(ActionError, "max_commits"):
+            ACTIONS["inspect_git"].run(self.workspace, {"max_commits": 1000})
 
 
 if __name__ == "__main__":

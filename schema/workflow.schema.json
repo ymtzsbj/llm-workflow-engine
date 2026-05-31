@@ -52,6 +52,7 @@
         "uses": {
           "enum": [
             "read_text",
+            "inspect_git",
             "render_template",
             "write_text"
           ]

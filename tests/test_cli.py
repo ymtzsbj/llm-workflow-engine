@@ -15,7 +15,7 @@ class CliTests(unittest.TestCase):
         schema_path = Path(__file__).parents[1] / "schema" / "workflow.schema.json"
         schema = json.loads(schema_path.read_text(encoding="utf-8"))
         action_names = schema["$defs"]["step"]["properties"]["uses"]["enum"]
-        self.assertEqual(["read_text", "render_template", "write_text"], action_names)
+        self.assertEqual(["read_text", "inspect_git", "render_template", "write_text"], action_names)
 
     def test_init_creates_schema_aware_starter_workflow(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:

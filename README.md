@@ -19,7 +19,8 @@ The first release intentionally stays small:
 - explicit approval gates for file writes;
 - workspace path isolation;
 - SHA-256 evidence logs for every run;
-- built-in actions for reading files, rendering templates, and writing files.
+- built-in actions for reading files, inspecting local Git repositories,
+  rendering templates, and writing files.
 
 ## Why
 
@@ -111,6 +112,20 @@ The output is written to `examples/vault/outputs/daily-brief.md`.
 
 See [docs/workflow-spec.md](docs/workflow-spec.md) for the complete v1 format.
 
+## Maintainer Workflow
+
+Generate a release note draft from the current repository without publishing
+anything:
+
+```bash
+python3 -m llm_workflow_engine.cli run examples/release-notes.workflow.json
+```
+
+The `inspect_git` action runs a fixed set of read-only Git commands inside the
+workspace. The release note remains a planned write until it receives explicit
+approval. See [MAINTAINERS.md](MAINTAINERS.md) for this project's release and
+issue-triage responsibilities.
+
 ## Safety Model
 
 The CLI treats model output and workflow files as untrusted inputs:
@@ -127,8 +142,9 @@ This is a foundation, not a claim that arbitrary automation is safe. See
 
 ## Project Status
 
-`v0.1.0` is an early alpha focused on a trustworthy local execution core. The
-next milestones are tracked in [ROADMAP.md](ROADMAP.md).
+`v0.3.0` is an early alpha focused on a trustworthy local execution core and
+small maintainer workflows. The next milestones are tracked in
+[ROADMAP.md](ROADMAP.md).
 
 The initial use case came from a manually tested personal knowledge workflow:
 read a local dashboard, render a daily brief, and require review before writing

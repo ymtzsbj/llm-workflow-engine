@@ -63,6 +63,17 @@ Returns the resolved template string. Expressions may appear in `template`.
 {"template": "# Brief\n${{ inputs.focus }}\n"}
 ```
 
+### `inspect_git`
+
+Runs a fixed set of read-only Git commands against a repository inside the
+selected workspace. It returns a Markdown-friendly summary with the current
+branch, clean or dirty state, tags, and recent commits. It does not expose
+arbitrary shell execution.
+
+```json
+{"path": ".", "max_commits": 5}
+```
+
 ### `write_text`
 
 Writes UTF-8 text within the selected workspace. The step must declare

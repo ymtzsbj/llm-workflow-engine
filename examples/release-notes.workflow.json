@@ -1,0 +1,50 @@
+{
+  "$schema": "https://raw.githubusercontent.com/ymtzsbj/llm-workflow-engine/main/schema/workflow.schema.json",
+  "version": "1",
+  "name": "release-note-draft",
+  "description": "Inspect a local repository and render a release note draft without publishing it.",
+  "inputs": {
+    "release": "next release",
+    "highlights": "Summarize the user-facing changes from CHANGELOG.md before publishing."
+  },
+  "steps": [
+    {
+      "id": "inspect_repository",
+      "uses": "inspect_git",
+      "with": {
+        "path": ".",
+        "max_commits": 5
+      }
+    },
+    {
+      "id": "read_changelog",
+      "uses": "read_text",
+      "with": {
+        "path": "CHANGELOG.md"
+      }
+    },
+    {
+      "id": "render_release_draft",
+      "uses": "render_template",
+      "needs": [
+        "inspect_repository",
+        "read_changelog"
+      ],
+      "with": {
+        "template": "# Release note draft: ${{ inputs.release }}\n\n## Repository state\n\n${{ steps.inspect_repository.output }}\n\n## Maintainer highlights\n\n${{ inputs.highlights }}\n\n## Changelog source\n\n${{ steps.read_changelog.output }}\n"
+      }
+    },
+    {
+      "id": "write_release_draft",
+      "uses": "write_text",
+      "needs": [
+        "render_release_draft"
+      ],
+      "approval": "required",
+      "with": {
+        "path": "drafts/release-notes.md",
+        "content": "${{ steps.render_release_draft.output }}"
+      }
+    }
+  ]
+}
