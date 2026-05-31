@@ -1,0 +1,24 @@
+{
+  "issues": [
+    {
+      "number": 17,
+      "title": "CLI crashes when a workflow references a missing file",
+      "body": "The run fails before an evidence log is written. Expected: record the failed read in the run log.",
+      "labels": []
+    },
+    {
+      "number": 23,
+      "title": "Document how local issue exports are shaped",
+      "body": "Add a small fixture and explain the required fields.",
+      "labels": [
+        "documentation"
+      ]
+    },
+    {
+      "number": 29,
+      "title": "Security report may include a leaked credential",
+      "body": "Move sensitive details to private vulnerability reporting before triage.",
+      "labels": []
+    }
+  ]
+}

@@ -63,6 +63,18 @@ Returns the resolved template string. Expressions may appear in `template`.
 {"template": "# Brief\n${{ inputs.focus }}\n"}
 ```
 
+### `render_issue_triage`
+
+Parses a local JSON issue export and renders a Markdown triage draft with
+deterministic suggestions for priority, labels, and follow-up questions. It
+does not call a remote API or update issues. The JSON value may be a list of
+issues or an object with an `issues` list. Each issue must include `number` and
+`title`; `body` and `labels` are optional.
+
+```json
+{"issues": "${{ steps.read_issue_export.output }}", "max_issues": 100}
+```
+
 ### `inspect_git`
 
 Runs a fixed set of read-only Git commands against a repository inside the

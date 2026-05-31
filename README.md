@@ -20,7 +20,8 @@ The first release intentionally stays small:
 - workspace path isolation;
 - SHA-256 evidence logs for every run;
 - built-in actions for reading files, inspecting local Git repositories,
-  rendering templates, and writing files.
+  rendering deterministic issue-triage drafts and templates, and writing
+  files.
 
 ## Why
 
@@ -125,6 +126,27 @@ The `inspect_git` action runs a fixed set of read-only Git commands inside the
 workspace. The release note remains a planned write until it receives explicit
 approval. See [MAINTAINERS.md](MAINTAINERS.md) for this project's release and
 issue-triage responsibilities.
+
+Turn a local issue export into a reviewable triage draft:
+
+```bash
+python3 -m llm_workflow_engine.cli run examples/issue-triage.workflow.json
+```
+
+The `render_issue_triage` action parses a local JSON export and suggests a
+priority, labels, and follow-up questions with deterministic rules. It does not
+call the GitHub API or update issues. See
+[examples/fixtures/issues.json](examples/fixtures/issues.json) for the small
+fixture format and [Issue #1](https://github.com/ymtzsbj/llm-workflow-engine/issues/1)
+for the public implementation task.
+
+Point the same workflow at your own local export without changing the checked-in
+example:
+
+```bash
+python3 -m llm_workflow_engine.cli run examples/issue-triage.workflow.json \
+  --input issue_export=path/to/issues.json
+```
 
 ## Safety Model
 

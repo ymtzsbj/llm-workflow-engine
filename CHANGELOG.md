@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+### Added
+
+- Deterministic `render_issue_triage` action for converting local JSON issue
+  exports into reviewable priority, label, and follow-up question suggestions.
+- Read-only issue triage draft example with a small sanitized fixture.
+
 ## [0.3.0] - 2026-06-01
 
 ### Added
