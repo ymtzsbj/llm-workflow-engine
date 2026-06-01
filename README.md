@@ -43,36 +43,52 @@ flowchart LR
     E --> H[Evidence log]
 ```
 
-## Quick Start
+## First Run In 60 Seconds
 
 Python 3.9 or newer is enough.
 
 ```bash
-python3 -m pip install -e .
-python3 -m llm_workflow_engine.cli init my-first.workflow.json
-python3 -m llm_workflow_engine.cli validate examples/daily-brief.workflow.json
-python3 -m llm_workflow_engine.cli plan examples/daily-brief.workflow.json
-python3 -m llm_workflow_engine.cli run examples/daily-brief.workflow.json
+python3 -m venv .venv
+source .venv/bin/activate
+python3 -m pip install \
+  https://github.com/ymtzsbj/llm-workflow-engine/releases/download/v0.4.0/llm_workflow_engine-0.4.0-py3-none-any.whl
+llm-workflow init my-first.workflow.json
+llm-workflow validate my-first.workflow.json
+llm-workflow plan my-first.workflow.json
+llm-workflow run my-first.workflow.json
 ```
 
 The last command is a dry-run. It creates an evidence log under
-`.workflow-runs/`, but it does not write the generated brief.
+`.workflow-runs/`, but it does not write `outputs/draft.md`.
 
 The `init` command creates a schema-aware starter workflow and refuses to
 overwrite an existing file unless `--force` is passed. Editors that support
 JSON Schema can use [schema/workflow.schema.json](schema/workflow.schema.json)
 for autocomplete and inline feedback.
 
-Execute the approved write explicitly:
+Execute the starter workflow's approved write explicitly:
 
 ```bash
-python3 -m llm_workflow_engine.cli run examples/daily-brief.workflow.json \
+llm-workflow run my-first.workflow.json \
   --execute \
   --allow-writes \
-  --approve write_brief
+  --approve write_draft
 ```
 
-The output is written to `examples/vault/outputs/daily-brief.md`.
+The output is written to `outputs/draft.md`.
+
+## Contributor Setup
+
+Clone the repository when you want to run the checked-in examples or make a
+change:
+
+```bash
+git clone https://github.com/ymtzsbj/llm-workflow-engine.git
+cd llm-workflow-engine
+python3 -m pip install -e .
+python3 -m llm_workflow_engine.cli validate examples/daily-brief.workflow.json
+python3 -m llm_workflow_engine.cli run examples/daily-brief.workflow.json
+```
 
 ## Workflow Example
 
