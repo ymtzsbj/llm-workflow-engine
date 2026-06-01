@@ -194,6 +194,14 @@ evidence:
 Redaction keeps hashes and byte sizes intact. It reduces accidental disclosure;
 review `.workflow-runs/<run-id>/run.json` before sharing it.
 
+## Share A First Run
+
+Tried the wheel or adapted a workflow? Open a
+[sanitized first-run report](https://github.com/ymtzsbj/llm-workflow-engine/issues/new?template=usage_report.yml).
+Successful dry-runs, approved writes, adoption blockers, and concrete workflow
+goals are all useful. Describe the goal and outcome, but do not paste private
+inputs, account details, or source content.
+
 ## Project Status
 
 `v0.4.0` is an early alpha focused on a trustworthy local execution core and

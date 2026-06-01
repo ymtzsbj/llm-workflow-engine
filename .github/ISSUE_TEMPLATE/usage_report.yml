@@ -1,0 +1,64 @@
+name: First-run or workflow report
+description: Share a sanitized first run, useful workflow, or adoption blocker.
+title: "usage: "
+labels: ["usage-report"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for trying llm-workflow-engine. A short report helps improve the
+        project. Describe your workflow goal, but remove private data, account
+        details, and source content before submitting.
+  - type: dropdown
+    id: install_method
+    attributes:
+      label: Installation method
+      description: How did you first run the project?
+      options:
+        - GitHub release wheel
+        - Editable source install
+        - Source archive
+        - Other
+    validations:
+      required: true
+  - type: dropdown
+    id: outcome
+    attributes:
+      label: Outcome
+      description: What happened during your first run or workflow attempt?
+      options:
+        - Completed a dry-run successfully
+        - Completed an explicitly approved write successfully
+        - Found a blocker or confusing step
+        - Evaluating the project for a future workflow
+    validations:
+      required: true
+  - type: textarea
+    id: workflow_goal
+    attributes:
+      label: Sanitized workflow goal
+      description: Describe the maintainer, knowledge, or automation workflow without pasting private inputs.
+      placeholder: Render a local weekly project brief and review it before writing the draft.
+    validations:
+      required: true
+  - type: textarea
+    id: useful_or_blocked
+    attributes:
+      label: What was useful or blocked you?
+      description: Share the most useful behavior, the first confusing step, or the smallest missing capability.
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: Version
+      placeholder: v0.4.0
+    validations:
+      required: true
+  - type: checkboxes
+    id: privacy
+    attributes:
+      label: Privacy check
+      options:
+        - label: I removed private data, account details, and source content from this report.
+          required: true

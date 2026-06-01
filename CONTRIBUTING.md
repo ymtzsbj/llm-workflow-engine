@@ -27,8 +27,16 @@ evidence metadata where applicable.
 
 ## Issues
 
-Use the issue templates for bugs and feature proposals. Security issues should
-follow [SECURITY.md](SECURITY.md).
+Use the issue templates for:
+
+- sanitized first-run and workflow reports;
+- reproducible bugs;
+- focused feature proposals.
+
+First-run reports are welcome even when nothing failed. They help identify
+useful workflows and adoption friction. Describe the goal and result without
+pasting private inputs, account details, or source content. Security issues
+should follow [SECURITY.md](SECURITY.md).
 
 ## Release Process
 
