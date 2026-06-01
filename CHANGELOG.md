@@ -4,6 +4,13 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+### Changed
+
+- Added a 60-second release-wheel first-run path and separated contributor
+  setup from the install experience.
+- Future GitHub releases attach an installable wheel alongside the source
+  archive, and CI validates and dry-runs every checked-in public workflow.
+
 ## [0.4.0] - 2026-06-01
 
 ### Added
