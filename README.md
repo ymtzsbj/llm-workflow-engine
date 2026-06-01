@@ -180,7 +180,7 @@ review `.workflow-runs/<run-id>/run.json` before sharing it.
 
 ## Project Status
 
-`v0.3.0` is an early alpha focused on a trustworthy local execution core and
+`v0.4.0` is an early alpha focused on a trustworthy local execution core and
 small maintainer workflows. The next milestones are tracked in
 [ROADMAP.md](ROADMAP.md).
 
