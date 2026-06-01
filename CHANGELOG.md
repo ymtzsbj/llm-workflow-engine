@@ -4,6 +4,8 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+## [0.4.0] - 2026-06-01
+
 ### Added
 
 - Deterministic `render_issue_triage` action for converting local JSON issue

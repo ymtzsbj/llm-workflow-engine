@@ -3,14 +3,27 @@ from __future__ import annotations
 import contextlib
 import io
 import json
+import re
 import tempfile
 import unittest
 from pathlib import Path
 
+from llm_workflow_engine import __version__
 from llm_workflow_engine.cli import main
 
 
 class CliTests(unittest.TestCase):
+    def test_package_versions_stay_in_sync(self) -> None:
+        repository = Path(__file__).parents[1]
+        pyproject = (repository / "pyproject.toml").read_text(encoding="utf-8")
+        setup = (repository / "setup.py").read_text(encoding="utf-8")
+        pyproject_version = re.search(r'(?m)^version = "([^"]+)"$', pyproject)
+        setup_version = re.search(r'(?m)^    version="([^"]+)",$', setup)
+        self.assertIsNotNone(pyproject_version)
+        self.assertIsNotNone(setup_version)
+        self.assertEqual(__version__, pyproject_version.group(1))
+        self.assertEqual(__version__, setup_version.group(1))
+
     def test_public_schema_is_valid_json_and_covers_builtin_actions(self) -> None:
         schema_path = Path(__file__).parents[1] / "schema" / "workflow.schema.json"
         schema = json.loads(schema_path.read_text(encoding="utf-8"))
