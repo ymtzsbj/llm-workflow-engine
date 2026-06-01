@@ -10,6 +10,8 @@ All notable changes to this project will be documented in this file.
   setup from the install experience.
 - Future GitHub releases attach an installable wheel alongside the source
   archive, and CI validates and dry-runs every checked-in public workflow.
+- Added a structured, privacy-conscious first-run feedback form and refreshed
+  the release guide to match wheel-enabled releases.
 
 ## [0.4.0] - 2026-06-01
 

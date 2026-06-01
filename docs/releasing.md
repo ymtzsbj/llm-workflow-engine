@@ -3,7 +3,7 @@
 ## Checklist
 
 1. Run `python3 -m unittest discover -s tests -v`.
-2. Run the example in dry-run mode.
+2. Validate and dry-run every checked-in public workflow.
 3. Generate the release note draft:
 
    ```bash
@@ -16,5 +16,5 @@
 7. Tag the release as `vX.Y.Z`.
 8. Publish release notes from the changelog.
 
-The GitHub release workflow packages the source archive when a version tag is
-pushed.
+The GitHub release workflow attaches a source archive and an installable Python
+wheel when a version tag is pushed.
