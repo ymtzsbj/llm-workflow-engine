@@ -18,7 +18,7 @@ The first release intentionally stays small:
 - dry-run by default;
 - explicit approval gates for file writes;
 - workspace path isolation;
-- SHA-256 evidence logs for every run;
+- SHA-256 evidence logs with opt-in metadata redaction;
 - built-in actions for reading files, inspecting local Git repositories,
   rendering deterministic issue-triage drafts and templates, and writing
   files.
@@ -158,9 +158,25 @@ The CLI treats model output and workflow files as untrusted inputs:
 - The built-in action registry does not expose shell execution, network
   requests, account access, or publishing actions.
 - Run logs record metadata and hashes, not file contents.
+- Workflows may replace configured fragments in logged paths and failure
+  messages before records are printed or written.
 
 This is a foundation, not a claim that arbitrary automation is safe. See
 [SECURITY.md](SECURITY.md) before adding actions with external side effects.
+
+Opt in when a local path or error fragment should not appear in shared
+evidence:
+
+```json
+{
+  "evidence": {
+    "redact": ["clients/acme"]
+  }
+}
+```
+
+Redaction keeps hashes and byte sizes intact. It reduces accidental disclosure;
+review `.workflow-runs/<run-id>/run.json` before sharing it.
 
 ## Project Status
 

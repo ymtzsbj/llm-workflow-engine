@@ -9,6 +9,8 @@ All notable changes to this project will be documented in this file.
 - Deterministic `render_issue_triage` action for converting local JSON issue
   exports into reviewable priority, label, and follow-up question suggestions.
 - Read-only issue triage draft example with a small sanitized fixture.
+- Opt-in workflow-level evidence metadata redaction for logged paths and
+  failure messages while preserving hashes and byte sizes.
 
 ## [0.3.0] - 2026-06-01
 

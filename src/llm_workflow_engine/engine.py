@@ -50,6 +50,17 @@ def _planned_evidence(workspace: Path, params: Mapping[str, Any]) -> Mapping[str
     return evidence
 
 
+def _redact_evidence_metadata(value: Any, fragments: Iterable[str], key: str | None = None) -> Any:
+    if isinstance(value, dict):
+        return {item_key: _redact_evidence_metadata(item, fragments, item_key) for item_key, item in value.items()}
+    if isinstance(value, list):
+        return [_redact_evidence_metadata(item, fragments, key) for item in value]
+    if isinstance(value, str) and key in {"path", "error"}:
+        for fragment in sorted(fragments, key=len, reverse=True):
+            value = value.replace(fragment, "[REDACTED]")
+    return value
+
+
 class WorkflowRunner:
     def __init__(self, workspace: Path, run_root: Path | None = None):
         self.workspace = workspace.resolve()
@@ -136,8 +147,9 @@ class WorkflowRunner:
                 record["steps"][-1].update({"status": "failed", "error": str(exc), "finished_at": _utc_now()})
         finally:
             record["finished_at"] = _utc_now()
-            self._write_evidence(record)
-        return record
+            evidence_record = _redact_evidence_metadata(record, workflow.evidence_redact)
+            self._write_evidence(evidence_record)
+        return evidence_record
 
     def _write_evidence(self, record: Mapping[str, Any]) -> None:
         run_dir = self.run_root / str(record["run_id"])

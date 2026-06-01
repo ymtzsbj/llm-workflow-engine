@@ -77,6 +77,26 @@ class CliTests(unittest.TestCase):
             self.assertIn("valid: cli-test", stdout.getvalue())
             self.assertIn('"status": "completed"', stdout.getvalue())
 
+    def test_validate_rejects_empty_evidence_redaction_fragment(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            workspace = Path(temp_dir)
+            workflow_path = workspace / "workflow.json"
+            workflow_path.write_text(
+                json.dumps(
+                    {
+                        "version": "1",
+                        "name": "invalid-redaction",
+                        "evidence": {"redact": [""]},
+                        "steps": [{"id": "render", "uses": "render_template"}],
+                    }
+                ),
+                encoding="utf-8",
+            )
+            stderr = io.StringIO()
+            with contextlib.redirect_stderr(stderr):
+                self.assertEqual(2, main(["validate", str(workflow_path), "--workspace", str(workspace)]))
+            self.assertIn("$.evidence.redact must be a list of non-empty strings", stderr.getvalue())
+
 
 if __name__ == "__main__":
     unittest.main()

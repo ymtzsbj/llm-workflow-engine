@@ -20,7 +20,7 @@ automation claims.
 - [x] More precise validation messages with JSON paths
 - [ ] Conditional steps
 - [ ] Output contracts for actions
-- [ ] Redaction rules for evidence metadata
+- [x] Redaction rules for evidence metadata
 
 ## v0.3: Maintainer Workflows
 

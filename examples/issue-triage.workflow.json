@@ -6,6 +6,11 @@
   "inputs": {
     "issue_export": "examples/fixtures/issues.json"
   },
+  "evidence": {
+    "redact": [
+      "examples/fixtures"
+    ]
+  },
   "steps": [
     {
       "id": "read_issue_export",

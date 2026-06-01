@@ -22,6 +22,7 @@ provided. The public JSON Schema lives at
 | `name` | yes | Human-readable workflow name. |
 | `description` | no | Short explanation of the workflow. |
 | `inputs` | no | Default scalar input values. |
+| `evidence` | no | Opt-in metadata redaction configuration. |
 | `steps` | yes | Non-empty list of workflow steps. |
 
 ## Step Fields
@@ -109,3 +110,21 @@ Each `run` creates `.workflow-runs/<run-id>/run.json`. The record contains:
 - failure messages when a step is blocked or fails.
 
 The record deliberately excludes file contents.
+
+### Metadata Redaction
+
+Workflows may replace configured fragments in evidence `path` and `error`
+fields before the CLI prints or writes a run record:
+
+```json
+{
+  "evidence": {
+    "redact": ["clients/acme", "token-123"]
+  }
+}
+```
+
+Matches are replaced with `[REDACTED]`. Redaction is opt-in and keeps SHA-256
+hashes and byte sizes unchanged so evidence remains useful for verification.
+It reduces accidental disclosure when sharing logs, but it is not encryption
+and does not replace a maintainer's review before sharing a record.
