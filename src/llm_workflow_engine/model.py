@@ -32,12 +32,25 @@ class Workflow:
     description: str
     inputs: Mapping[str, Any]
     steps: List[WorkflowStep]
+    evidence_redact: List[str] = field(default_factory=list)
 
 
 def _require_mapping(value: Any, label: str) -> Mapping[str, Any]:
     if not isinstance(value, dict):
         raise WorkflowError(f"{label} must be an object")
     return value
+
+
+def _validate_evidence_redact(value: Any, label: str = "$.evidence.redact") -> List[str]:
+    if not isinstance(value, list) or not all(isinstance(item, str) and item for item in value):
+        raise WorkflowError(f"{label} must be a list of non-empty strings")
+    if len(value) > 100:
+        raise WorkflowError(f"{label} must contain at most 100 strings")
+    if any(len(item) > 256 for item in value):
+        raise WorkflowError(f"{label} strings must contain at most 256 characters")
+    if len(set(value)) != len(value):
+        raise WorkflowError(f"{label} must not contain duplicates")
+    return list(value)
 
 
 def load_workflow(path: Path) -> Workflow:
@@ -62,6 +75,11 @@ def load_workflow(path: Path) -> Workflow:
         raise WorkflowError("$.description must be a string")
 
     inputs = _require_mapping(data.get("inputs", {}), "$.inputs")
+    evidence = _require_mapping(data.get("evidence", {}), "$.evidence")
+    unknown_evidence_fields = sorted(set(evidence) - {"redact"})
+    if unknown_evidence_fields:
+        raise WorkflowError(f"$.evidence contains unknown fields: {', '.join(unknown_evidence_fields)}")
+    evidence_redact = _validate_evidence_redact(evidence.get("redact", []))
     raw_steps = data.get("steps")
     if not isinstance(raw_steps, list) or not raw_steps:
         raise WorkflowError("$.steps must be a non-empty list")
@@ -85,10 +103,11 @@ def load_workflow(path: Path) -> Workflow:
             raise WorkflowError(f'{step_path}.approval must be "required" when set')
         steps.append(WorkflowStep(step_id, uses, params, needs, approval))
 
-    return Workflow(version, name, description, inputs, steps)
+    return Workflow(version, name, description, inputs, steps, evidence_redact)
 
 
 def validate_workflow(workflow: Workflow, action_names: Iterable[str]) -> List[WorkflowStep]:
+    _validate_evidence_redact(workflow.evidence_redact, "workflow evidence_redact")
     known_actions = set(action_names)
     by_id: Dict[str, WorkflowStep] = {}
     for step in workflow.steps:
